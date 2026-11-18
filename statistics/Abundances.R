@@ -42,6 +42,9 @@ handlers("progress")
 # Spike-in relative abundance comparison
 # =====================================================================
 Data_assemblage <- subset_samples(Data, Purpose == "assemblage")
+Data_mom <- subset_samples(Data, Purpose == "mom")
+Data_blank <- subset_samples(Data, Purpose == "blank")
+Data_perturbation <- subset_samples(Data, Purpose == "perturbation")
 
 ## ---- Extract spike-in ----
 tax <- as.data.frame(tax_table(Data_assemblage))
@@ -56,7 +59,7 @@ spikein_df
 
 ## ---- Model genotype - Imtechella ----
 genotype_Imt_model <- glmmTMB(log10(Abundance) ~ Genotype * sampling_age + 
-    (1 | Cage), family = gaussian(),
+    (1 | Cage) + Batch, family = gaussian(),
     data = subset(spikein_df, Spike == "Imtechella"))
 
 Anova(genotype_Imt_model, type = "III", component = "cond")
@@ -68,7 +71,7 @@ testDispersion(genotype_Imt_sim)
 
 ## ---- Mom genotype - Imtechella ----
 mom_Imt_model <- glmmTMB(log10(Abundance) ~ mom_genotype * sampling_age + 
-    (1 | Cage), family = gaussian(),
+    (1 | Cage) + Batch, family = gaussian(),
     data = subset(spikein_df, Spike == "Imtechella"))
 
 Anova(mom_Imt_model, type = "III", component = "cond")
@@ -79,7 +82,7 @@ plot(mom_Imt_sim)
 
 ## ---- Model genotype - Allobacillus ----
 genotype_Allo_model <- glmmTMB(log10(Abundance) ~ Genotype * sampling_age + 
-    (1 | Cage), family = gaussian(),
+    (1 | Cage) + Batch, family = gaussian(),
     data = subset(spikein_df, Spike == "Allobacillus"))
 
 Anova(genotype_Allo_model, type = "III", component = "cond")
@@ -91,7 +94,7 @@ testDispersion(genotype_Allo_sim)
 
 ## ---- Mom genotype - Allobacillus ----
 mom_Allo_model <- glmmTMB(log10(Abundance) ~ mom_genotype * sampling_age + 
-    (1 | Cage), family = gaussian(),
+    (1 | Cage) + Batch, family = gaussian(),
     data = subset(spikein_df, Spike == "Allobacillus"))
 
 Anova(mom_Allo_model, type = "III", component = "cond")
@@ -194,7 +197,7 @@ load_long <- load_comparison %>%
 # GLM control is adjusted to ensure convergence, default optimizer fails
 fit_load <- function(df, term) {
     f <- as.formula(paste0("log10(cells_per_g) ~ ", term,
-        " * sampling_age + (1 | Cage)"))
+        " * sampling_age + (1 | Cage) + Batch"))
     glmmTMB(f, family = gaussian(), data = df,
         control = glmmTMBControl(optCtrl = list(iter.max = 1e4, eval.max = 1e4)))
 }

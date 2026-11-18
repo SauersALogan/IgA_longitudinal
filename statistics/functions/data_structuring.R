@@ -24,7 +24,7 @@ data_dir <- Sys.getenv("data_dir")
 if (data_dir == "") stop("data_dir is not set. Add it to .Renviron and restart R.")
 
 ## ---- Load data ----
-counts   <- read.csv(file.path(data_dir, "First_batch_metaphlan_11-11_2026.csv"),
+counts   <- read.csv(file.path(data_dir, "All_batches_metaphlan_18-11-2026.csv"),
     row.names = 1)
 metadata <- read.csv(file.path(data_dir, "Mouse_metadata_11-11-2026.csv"),
     row.names = 1)
@@ -40,6 +40,7 @@ metadata$mom_genotype     <- as.factor(metadata$mom_genotype)
 metadata$Batch            <- as.factor(metadata$Batch)
 metadata$sampling_age     <- as.factor(metadata$sampling_age)
 metadata$abx_timepoint    <- as.factor(metadata$abx_timepoint)
+metadata$Mill_run <- as.factor(metadata$Mill_run)
 
 ## ---- Phyloseq object ----
 OTU <- otu_table(counts, taxa_are_rows = TRUE)
